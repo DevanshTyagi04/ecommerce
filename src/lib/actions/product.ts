@@ -50,21 +50,25 @@ export async function getAllProducts(filters: NormalizedProductFilters): Promise
     conds.push(or(ilike(products.name, pattern), ilike(products.description, pattern))!);
   }
 
-  if (filters.genderSlugs.length) {
+  if (filters?.genderSlugs?.length) {
     conds.push(inArray(genders.slug, filters.genderSlugs));
   }
 
-  if (filters.brandSlugs.length) {
+  if (filters?.brandSlugs?.length) {
     conds.push(inArray(brands.slug, filters.brandSlugs));
   }
 
-  if (filters.categorySlugs.length) {
+  if (filters?.categorySlugs?.length) {
     conds.push(inArray(categories.slug, filters.categorySlugs));
   }
 
-  const hasSize = filters.sizeSlugs.length > 0;
-  const hasColor = filters.colorSlugs.length > 0;
-  const hasPrice = !!(filters.priceMin !== undefined || filters.priceMax !== undefined || filters.priceRanges.length);
+  const hasSize = (filters?.sizeSlugs?.length ?? 0) > 0;
+  const hasColor = (filters?.colorSlugs?.length ?? 0) > 0;
+  const hasPrice = !!(
+    filters?.priceMin !== undefined ||
+    filters?.priceMax !== undefined ||
+    (filters?.priceRanges?.length ?? 0) > 0
+  );
 
   const variantConds: SQL[] = [];
   if (hasSize) {
@@ -81,7 +85,7 @@ export async function getAllProducts(filters: NormalizedProductFilters): Promise
   }
   if (hasPrice) {
     const priceBounds: SQL[] = [];
-    if (filters.priceRanges.length) {
+    if (filters?.priceRanges?.length) {
       for (const [min, max] of filters.priceRanges) {
         const subConds: SQL[] = [];
         if (min !== undefined) {
@@ -158,8 +162,8 @@ export async function getAllProducts(filters: NormalizedProductFilters): Promise
       ? desc(sql`max(${variantJoin.price})`)
       : desc(products.createdAt);
 
-  const page = Math.max(1, filters.page);
-  const limit = Math.max(1, Math.min(filters.limit, 60));
+  const page = Math.max(1, Number(filters?.page ?? 1));
+  const limit = Math.max(1, Math.min(Number(filters?.limit ?? 20), 60));
   const offset = (page - 1) * limit;
 
   const rows = await db
