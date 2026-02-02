@@ -75,8 +75,3 @@ The application includes the following tables:
 - **orders**: Customer orders
 - **order_items**: Individual items in orders
 
-ur skills. Give it a go!
-
-<a href="https://jsm.dev/nikecom-jsmpro" target="_blank">
-  <img src="public/readme/jsmpro.webp" alt="Project Banner">
-</a>
